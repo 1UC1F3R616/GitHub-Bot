@@ -4,7 +4,7 @@ import requests
 import json
 
 ## Configurations
-logging.basicConfig(level=logging.DEBUG, \
+logging.basicConfig(level=logging.WARNING, \
                     filename='GitHubBOT.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 ## GLOBALS
@@ -41,38 +41,47 @@ def all_repos(username):
 
 ## Follow A User
 def follow_user(username):
-    # Check if Already Followed
-    followed = requests.get('https://api.github.com/user/following/{}'.format(username), \
-                     headers={'Authorization': 'token {}'.format(TOKEN)})
+    try:
+        # Check if Already Followed
+        followed = requests.get('https://api.github.com/user/following/{}'.format(username), \
+                         headers={'Authorization': 'token {}'.format(TOKEN)})
 
-    if followed.status_code == 204:
-        logging.info('[-] {} is Already Followed'.format(username)) # INFO
-        print('[-] {} is Already Followed'.format(username))
-        return 404
-    
-    r = requests.put('https://api.github.com/user/following/{}'.format(username), \
-                     headers={'Authorization': 'token {}'.format(TOKEN)})
-    if(r.status_code == 204): # 204 is OK
-        print('Followed {}'.format(username))
-        logging.info('Followed {}'.format(username)) # INFO
-    else:
-        logging.warning("! {}: Failed to Follow {}".format(str(r.status_code), username)) # WARNING
-        print("! {}: Failed to Follow {}".format(str(r.status_code), username))
-    return 200
+        if followed.status_code == 204:
+            logging.info('[-] {} is Already Followed'.format(username)) # INFO
+            print('[-] {} is Already Followed'.format(username))
+            return 404
+        
+        r = requests.put('https://api.github.com/user/following/{}'.format(username), \
+                         headers={'Authorization': 'token {}'.format(TOKEN)})
+        if(r.status_code == 204): # 204 is OK
+            print('Followed {}'.format(username))
+            logging.info('Followed {}'.format(username)) # INFO
+        else:
+            logging.warning("! {}: Failed to Follow {}".format(str(r.status_code), username)) # WARNING
+            print("! {}: Failed to Follow {}".format(str(r.status_code), username))
+        return 200
+    except:
+        logging.error('! Error in Following {}'.format(follow_user)) #ERROR
+        print('! Error in Following {}'.format(follow_user))
+        return 200
 
 ## Fork a Repo
 def fork_repo(repo_name):
-    # Check if Already Forked -- Since users are filltered so it's OK :/
-    
-    
-    r = requests.post('https://api.github.com/repos/{}/forks'.format(repo_name), \
-                     headers={'Authorization': 'token {}'.format(TOKEN)})
-    if (r.status_code == 202): # 202 is OK
-        logging.info('Forked {}'.format(repo_name)) # INFO
-        print('Forked {}'.format(repo_name))
-    else:
-        logging.warning("! {}: Fork Failed for {}".format(str(r.status_code), repo_name)) # WARNING
-        print("! {}: Fork Failed for {}".format(str(r.status_code), repo_name))
+    try:
+        # Check if Already Forked -- Since users are filltered so it's OK :/
+        
+        
+        r = requests.post('https://api.github.com/repos/{}/forks'.format(repo_name), \
+                         headers={'Authorization': 'token {}'.format(TOKEN)})
+        if (r.status_code == 202): # 202 is OK
+            logging.info('Forked {}'.format(repo_name)) # INFO
+            print('Forked {}'.format(repo_name))
+        else:
+            logging.warning("! {}: Fork Failed for {}".format(str(r.status_code), repo_name)) # WARNING
+            print("! {}: Fork Failed for {}".format(str(r.status_code), repo_name))
+    except:
+        logging.error('! Error in Forking {}'.format(repo_name)) #ERROR
+        print('! Error in Forking {}'.format(repo_name))
     
 ## Star a Repo | Getting 404, not a scope issue
 def star_repo(repo_name):
@@ -118,6 +127,6 @@ def run(username):
         except:
             print('No More Followers')
 
-run('1UC1F3R616')
+run('ghost')
     
     
