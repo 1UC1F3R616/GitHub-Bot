@@ -5,7 +5,7 @@ import json
 
 ## Configurations
 logging.basicConfig(level=logging.WARNING, \
-                    filename='GitHubBOT.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+                    filename='GitHubBOT.log', filemode='a', format='%(name)s - %(levelname)s - %(message)s')
 
 ## GLOBALS
 TOKEN = "YOUR TOKEN HERE | SCOPE OF TOKEN SHOULD BE REPOS + FORK + YOUR_CHOICE"
@@ -42,6 +42,12 @@ def all_repos(username):
 ## Follow A User
 def follow_user(username):
     try:
+        # If it's self then don't go deep
+        if (username == 'D-E-F-E-A-T'): # Replace with self username
+            logging.info('[-] {} is Already Followed'.format(username)) # INFO
+            print('[-] {} is Already Followed'.format(username))
+            return 404
+        
         # Check if Already Followed
         followed = requests.get('https://api.github.com/user/following/{}'.format(username), \
                          headers={'Authorization': 'token {}'.format(TOKEN)})
@@ -68,8 +74,12 @@ def follow_user(username):
 ## Fork a Repo
 def fork_repo(repo_name):
     try:
-        # Check if Already Forked -- Since users are filltered so it's OK :/
+        # No fork for self
+        if (repo_name.split('/')[0] == 'D-E-F-E-A-T') # replace with self username:
+            return
         
+        # Check if Already Forked -- Since users are filltered so it's OK :/
+        # Saving API and code because it will cost 1 request any way if we are checking using get
         
         r = requests.post('https://api.github.com/repos/{}/forks'.format(repo_name), \
                          headers={'Authorization': 'token {}'.format(TOKEN)})
@@ -98,7 +108,7 @@ def run(username):
     followers_len = len(followers)
     if followers_len!=0: # Let it be Wild / Follow less than Half a users
         while(followers_len > 0):
-            index = (len(followers_copy)-1)%(random.choice((1, 10))) # Random Selection of Person
+            index = (len(followers_copy)-1)%(random.choice((1, 1000))) # Random Selection of Person
             if follow_user(followers_copy.pop(index)) == 404: # Remove any person already followed
                 followers.pop(index)
                 followers_len -= 1
@@ -115,7 +125,7 @@ def run(username):
     if repos_length!=0: # Let it be Wild / Fork less than Half a repos
         while(repos_length > 0):
             fork_repo(repos_copy.pop())
-            repos_length -= random.choice((1, 20))
+            repos_length -= random.choice((1, 30)) # Increase this number to make fork lesser
 
     del repos
     del repos_copy
@@ -127,6 +137,6 @@ def run(username):
         except:
             print('No More Followers')
 
-run('ghost')
+run('manikandanraji')
     
     
