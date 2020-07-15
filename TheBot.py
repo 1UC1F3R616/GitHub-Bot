@@ -75,7 +75,7 @@ def follow_user(username):
 def fork_repo(repo_name):
     try:
         # No fork for self
-        if (repo_name.split('/')[0] == 'D-E-F-E-A-T') # replace with self username:
+        if (repo_name.split('/')[0] == 'D-E-F-E-A-T'): # replace with self username
             return
         
         # Check if Already Forked -- Since users are filltered so it's OK :/
